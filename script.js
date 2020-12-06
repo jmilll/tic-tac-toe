@@ -28,22 +28,74 @@ myModule._privateMethod(); // is TypeError protected by the module closure
 
 const gameBoard = (function() {
     'use strict';
-    //add 9 divs w/ class of 'tile' to .gameboard div
-    let board = document.querySelector('.gameboard')
+    
+    const tile = {
+        mark: ''
+    }
+    const board = [];
 
-    function createTiles() {
-        let i = 1;
-        for (i = 1; i <= 9; i++) {
+    const getBoard = () => {
+        return board;
+    }
+    /*
+    //works, but doesnt pull from board array
+    function createTiles2() {
+        const boardContainer= document.querySelector('.gameboard')
+        
+        for (let i = 1; i <= 9; i++) {
+            //create dom element
             const newTile = document.createElement('div');
             newTile.setAttribute('class', 'tile');
             newTile.setAttribute('value', i);
-            board.appendChild(newTile);
+            boardContainer.appendChild(newTile);
+            //push to board array
+            board.push(tile);
+        }
+    }
+    */
+
+    // create board from board array
+    function tileTemplate(obj) {
+        const boardContainer = document.querySelector('.gameboard')
+        const newTile = document.createElement('div');
+        newTile.setAttribute('class', 'tile');
+        boardContainer.appendChild(newTile);
+    }
+
+    const createTiles = () => {
+        if (board.length === 0) {
+            for (let i = 1; i <= 9; i++) {
+                board.push(tile);
+            }
+            for (let j = 0; j < board.length; j++) {
+                //create dom element for each object in array
+                tileTemplate(board[j]);
+            }
+        }
+        console.log(board);
     }
 
 
+    const renderBoard = () => {
+        //takes all tiles renders from board array
+        const tiles = document.querySelectorAll('.tile');
+        tiles.forEach(tile => document.querySelector('.gameboard').removeChild(tile));
+        for (let j = 0; j < board.length; j++) {
+            //create dom element for each object in array
+            tileTemplate(board[j]);
+        }
+    }
+
+    const mark = () => {
+        const tiles = document.querySelectorAll('.tile');
+        tiles.forEach(tile => tile.addEventListener('click', console.log('tile')));
     }
 
     return {
         createTiles,
+        getBoard,
+        renderBoard,
+        mark,
     }
 })();
+gameBoard.createTiles()
