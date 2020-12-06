@@ -25,6 +25,18 @@ console.log(myModule.publicProperty); // outputs 'I am a public property'
 console.log(myModule._privateProperty); // is undefined protected by the module closure
 myModule._privateMethod(); // is TypeError protected by the module closure
 */
+//--DYNAMICALLY SELECT BUTTONS INCLUDING ONES THAT ARE NOT CREATED--
+document.querySelector('.gameboard').addEventListener('click', (e) => {
+    //e.preventDefault();
+    if (!e.target) { return; }
+    if (e.target.matches('.tile')) {
+        //this.textContent = 'x'
+        console.log('tile')
+        // changes the div to have text/mark
+        e.target.innerText = 'x'
+        console.log(e.target.getAttribute('data-value'))
+    }
+});
 
 const gameBoard = (function() {
     'use strict';
@@ -37,6 +49,7 @@ const gameBoard = (function() {
     const getBoard = () => {
         return board;
     }
+
     /*
     //works, but doesnt pull from board array
     function createTiles2() {
@@ -55,34 +68,48 @@ const gameBoard = (function() {
     */
 
     // create board from board array
-    function tileTemplate(obj) {
+    function tileTemplate(obj, num) {
         const boardContainer = document.querySelector('.gameboard')
         const newTile = document.createElement('div');
         newTile.setAttribute('class', 'tile');
+            if (obj.mark === '') {
+                newTile.textContent = '';
+            } else if (obj.mark === 'x') {
+                newTile.textContent = 'x';
+            } else if (obj.mark === 'o') {
+                newTile.textContent = 'o';
+            } else {
+                console.log('hmm');
+            }
+        newTile.setAttribute('data-value', num);
         boardContainer.appendChild(newTile);
+        //console.log(obj.mark); //works
     }
 
     const createTiles = () => {
         if (board.length === 0) {
-            for (let i = 1; i <= 9; i++) {
-                board.push(tile);
+            
+            for (let i = 0; i < 9; i++) {
+                board.push(
+                    {id: i,
+                    mark: ''}
+                );
+                tileTemplate(board[i]);
             }
-            for (let j = 0; j < board.length; j++) {
-                //create dom element for each object in array
-                tileTemplate(board[j]);
-            }
-        }
+
+        } else {return}
         console.log(board);
     }
 
 
     const renderBoard = () => {
+        createTiles();
         //takes all tiles renders from board array
         const tiles = document.querySelectorAll('.tile');
         tiles.forEach(tile => document.querySelector('.gameboard').removeChild(tile));
         for (let j = 0; j < board.length; j++) {
             //create dom element for each object in array
-            tileTemplate(board[j]);
+            tileTemplate((board[j]), j);
         }
     }
 
@@ -98,4 +125,4 @@ const gameBoard = (function() {
         mark,
     }
 })();
-gameBoard.createTiles()
+gameBoard.renderBoard()
