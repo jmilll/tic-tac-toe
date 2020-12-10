@@ -25,6 +25,7 @@ console.log(myModule.publicProperty); // outputs 'I am a public property'
 console.log(myModule._privateProperty); // is undefined protected by the module closure
 myModule._privateMethod(); // is TypeError protected by the module closure
 */
+
 //--DYNAMICALLY SELECT BUTTONS INCLUDING ONES THAT ARE NOT CREATED--
 document.querySelector('.gameboard').addEventListener('click', (e) => {
     //e.preventDefault();
@@ -34,7 +35,11 @@ document.querySelector('.gameboard').addEventListener('click', (e) => {
         console.log('tile')
         // changes the div to have text/mark
         e.target.innerText = 'x'
-        console.log(e.target.getAttribute('data-value'))
+        //console.log(e.target.getAttribute('data-value'))
+        let v = e.target.getAttribute('data-value');
+        let player = 'playerOne';
+        //gameBoard.mark(v) //before adding player
+        gameBoard.mark(player, v)
     }
 });
 
@@ -112,17 +117,70 @@ const gameBoard = (function() {
             tileTemplate((board[j]), j);
         }
     }
+    //when adding players, might have to pass mark(player, mark)
+    /*function mark(v) {
+        let boardObj = board[v].mark
 
-    const mark = () => {
-        const tiles = document.querySelectorAll('.tile');
-        tiles.forEach(tile => tile.addEventListener('click', console.log('tile')));
+        if (boardObj === '') {
+            return board[v].mark = 'x';  
+        } 
+        console.log('access');
+    }
+    */
+    const mark = (player, value) => {
+        const boardObj = board[value].mark
+        if (!boardObj === ''){return};
+        if (boardObj === '' && player === 'playerOne') {
+            return board[value].mark = 'x';  
+        } else {
+            return board[value].mark = 'o'; 
+        }
     }
 
     return {
-        createTiles,
         getBoard,
         renderBoard,
         mark,
     }
 })();
 gameBoard.renderBoard()
+
+
+const winCon = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+]
+
+//find a winner. Loops thru wincons and applys them, checking if marks match
+function checkWinner() {
+    let xx = 0;
+    let yy = 0;
+    let zz = 0;
+
+    for(let i = 0; i < winCon.length; i++) {
+
+        xx = winCon[i][0]
+        yy = winCon[i][1]
+        zz = winCon[i][2]
+
+        //console.log( xx , yy , zz)
+    
+        if ( board[xx].mark !== '' && board[xx].mark == board[yy].mark && board[yy].mark == board[zz].mark) {
+            console.log('winner = ', board[xx].mark )
+            break;
+        }
+    }    
+}
+
+/*
+//trying to find the mark value pulling from gameboard
+gameBoard.getBoard().forEach(function(item, index, array) {
+    console.log(item.mark, index)
+})
+*/
