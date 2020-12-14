@@ -9,9 +9,31 @@
     <link href="styles/style.css" rel="stylesheet">
 </head>
 <body>
-
-    <div class="gameboard">
-
+    <div class="header">
+        <h1>Tic Tac Toe</h1>
+    </div>
+    <div class="setup">
+        <div class="choose-player">
+            <h3>Player 1</h3>
+        </div>
+        <div class="choose-player">
+            <h3>VS</h3>
+        </div>
+        <div class="choose-player">
+            <h3>Player 2</h3>
+            <button type="button" id="p2-human">Human</button>
+            <button type="button" id="p2-cpu">Computer</button>
+        </div>
+        <!--<button type="button" class="start hidden">Play</button>-->
+    </div>
+    <div class="board-container">
+        <span class="cover hidden"></span>
+        <p class="turn"></p>
+        <div class="gameboard">
+        </div>
+    </div>
+    <div class="footer">
+        <button type="button" class="restart hidden">Play Again</button>
     </div>
 <script src="script.js"></script>    
 </body>
