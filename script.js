@@ -115,6 +115,8 @@ const gameBoard = (function() {
         //console.log(obj.mark); //works
     }
 
+
+
     const createTiles = () => {
         if (board.length === 0) {
             
@@ -141,7 +143,16 @@ const gameBoard = (function() {
             //create dom element for each object in array
             tileTemplate((board[j]), j);
         }
+        //Display turn and mark for clarity
+        document.querySelector('.turn').textContent = (controller.getTurnPlayerName()+`'s turn! Place your "${(controller.getTurnPlayerMark().toUpperCase())}"`)
+
     }
+
+    const resetBoard = () => {
+        board.length = 0;
+        renderBoard();
+    }
+
     //when adding players, might have to pass mark(player, mark)
     /*function mark(v) {
         let boardObj = board[v].mark
@@ -176,7 +187,7 @@ const gameBoard = (function() {
     
     //find a winner. Loops thru wincons and applys them, checking if marks match
     const checkWinner = () => {
-    
+
         let xx = 0;
         let yy = 0;
         let zz = 0;
@@ -195,9 +206,18 @@ const gameBoard = (function() {
             if ( board[xx].mark !== '' && board[xx].mark == board[yy].mark && board[yy].mark == board[zz].mark) {
                 console.log('winner = ', board[xx].mark )
                 winner = true;
+                document.querySelector('.restart').classList.remove('hidden');
+                //opposite winner of turn since they won last turn
+                if (controller.getTurnPlayerName() === 'Player One') {
+                    document.querySelector('.turn').textContent = 'Player Two Wins!';
+                } else {document.querySelector('.turn').textContent = 'Player One Wins!';};
+                document.querySelector('.cover').classList.toggle('hidden');
                 break;
-            } else if ( turns === 9 && winner !== true) {
+              // use % of 9 instead of turns === 9 in case of choosing to play again needs to remain constaint case  
+            } else if ( turns % 9 === 0 && winner !== true) {
                 console.log('tie game')
+                document.querySelector('.restart').classList.remove('hidden');
+                document.querySelector('.cover').classList.toggle('hidden');
                 break;
             }
         }    
@@ -208,15 +228,79 @@ const gameBoard = (function() {
         renderBoard,
         mark,
         checkWinner,
+        resetBoard,
     }
 })();
-gameBoard.renderBoard()
+//gameBoard.renderBoard()
 
 
 const controller = (() => {
     'use strict'
+    const setUp = document.querySelector('.setup');
+    const pTwoHuman = document.getElementById('p2-human');
+    const pTwoCpu = document.getElementById('p2-cpu');
+    const restartButton = document.querySelector('.restart');
+    //const startButton = document.querySelector('.start');
 
+    //-- HANDLES GAME SETUP SECTION --
+    document.querySelector('.setup').addEventListener('click', (e) => {
+        //e.preventDefault();
+        if (!e.target) { return; }
+        if (e.target.matches('#p2-human')){
+            playerTwo = playerFactory('p2', 'Player Two', 'o')
+            e.target.classList.toggle('active')
+            pTwoCpu.classList.remove('active')
+            //startButton.setAttribute('class', .start')
 
+            //Create start button so it can't be accessed w/o selecting players. Also prevents starting game prematurely by toggling display in DOM manipulation
+            if (setUp.contains(document.querySelector('.start'))) {
+                return
+            } else {
+                createStart();
+            };
+        } else if (e.target.matches('#p2-cpu')){
+            playerTwo = playerFactory('p2', 'CPU', 'o')
+            e.target.classList.toggle('active')
+            pTwoHuman.classList.remove('active')
+            //startButton.setAttribute('class', .start')
+            if (setUp.contains(document.querySelector('.start'))) { return; } 
+                else { createStart(); };
+        } else if (e.target.matches('.start')) {
+            gameBoard.renderBoard() 
+            e.target.parentElement.classList.toggle('hidden')
+        }
+    });
+
+    
+    const createStart = () => {
+        const setupDiv = document.querySelector('.setup');
+        const newStartButton = document.createElement('button');
+        newStartButton.setAttribute('type', 'button');
+        newStartButton.setAttribute('class', 'start');
+        newStartButton.textContent = 'Play';
+        setupDiv.appendChild(newStartButton);
+    }
+    
+    restartButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        gameBoard.resetBoard();
+        document.querySelector('.cover').classList.toggle('hidden');
+        e.target.classList.add('hidden');
+    });
+    /*
+    startButton.addEventListener('click', (e) => {
+        //e.preventDefault();
+        if (!e.target) { return; }
+
+        //playerOne = playerFactory('p1', 'Human', 'x')
+        //playerTwo = playerFactory('p2', 'CPU', 'o')
+        //console.log(.start')
+        gameBoard.renderBoard() 
+        startButton.parentElement.classList.toggle('hidden')
+        
+        
+    });
+    */
     const playerFactory = (player, name, mark) => {
         //const sayHello = () => console.log('hello!');
         return { 
@@ -227,9 +311,11 @@ const controller = (() => {
         };
     };
       
-    const playerOne = playerFactory('p1', 'Human', 'x');
-    const playerTwo = playerFactory('p2', 'CPU', 'o');
+    //const playerOne = playerFactory('p1', 'Human', 'x');
+    //const playerTwo = playerFactory('p2', 'CPU', 'o');
       
+    let playerOne = playerFactory('p1', 'Player One', 'x');
+    let playerTwo = {};
     
     const getPlayers = () => {
         return {playerOne, playerTwo}
@@ -242,6 +328,14 @@ const controller = (() => {
         return turn.player;
     }
 
+    const getTurnPlayerName = () => {
+        return turn.name;
+    }
+
+    const getTurnPlayerMark = () => {
+        return turn.mark;
+    }
+
     const turnNumber = () => {
         return turns;
     }
@@ -251,16 +345,20 @@ const controller = (() => {
         turn !== playerTwo ? turn = playerTwo : turn = playerOne;
         turns++;
         //console.log(turn.name);
+       // document.querySelector('.turn').textContent = (controller.getTurnPlayerName()+`'s turn! Place your "${(turn.mark.toUpperCase())}"`)
 
         return turn.mark;
     }
 
     return {
-        playerFactory,
+        //playerFactory,
         getPlayers,
         toggleTurn,
         getTurn,
         turnNumber,
+        getTurnPlayerName,
+        getTurnPlayerMark,
+
     }
 })();
 
@@ -270,11 +368,6 @@ const controller = (() => {
 
 
 /*
-        if (turn === playerOne) {
-            turn = playerTwo;
-        } else {
-            turn = playerOne
-        }
 //trying to find the mark value pulling from gameboard
 gameBoard.getBoard().forEach(function(item, index, array) {
     console.log(index, item.mark)
