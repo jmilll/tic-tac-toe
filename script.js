@@ -50,7 +50,8 @@ document.querySelector('.gameboard').addEventListener('click', (e) => {
         gameBoard.mark(player, v)
         controller.toggleTurn();
         gameBoard.renderBoard()
-        gameBoard.checkWinner()
+        //gameBoard.checkWinner()
+        controller.checkWinner();
     }
 });
 
@@ -174,6 +175,7 @@ const gameBoard = (function() {
         }
     }
 
+    /* adding to controller
     const winCon = [
         [0, 1, 2],
         [3, 4, 5],
@@ -216,18 +218,20 @@ const gameBoard = (function() {
               // use % of 9 instead of turns === 9 in case of choosing to play again needs to remain constaint case  
             } else if ( turns % 9 === 0 && winner !== true) {
                 console.log('tie game')
+                document.querySelector('.turn').textContent = 'Tie Game!'
                 document.querySelector('.restart').classList.remove('hidden');
                 document.querySelector('.cover').classList.toggle('hidden');
                 break;
             }
         }    
     }
+    */
 
     return {
         getBoard,
         renderBoard,
         mark,
-        checkWinner,
+        //checkWinner,
         resetBoard,
     }
 })();
@@ -350,6 +354,57 @@ const controller = (() => {
         return turn.mark;
     }
 
+    const winCon = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+    ]
+    
+    //find a winner. Loops thru wincons and applys them, checking if marks match
+    const checkWinner = () => {
+
+        let xx = 0;
+        let yy = 0;
+        let zz = 0;
+        
+        let winner = false;
+
+        for(let i = 0; i < winCon.length; i++) {
+            const board = gameBoard.getBoard(); //to work outside gameboard method
+            //const turns = controller.turnNumber();
+            xx = winCon[i][0]
+            yy = winCon[i][1]
+            zz = winCon[i][2]
+    
+            //console.log( xx , yy , zz)
+        
+            if ( board[xx].mark !== '' && board[xx].mark == board[yy].mark && board[yy].mark == board[zz].mark) {
+                console.log('winner = ', board[xx].mark )
+                winner = true;
+                turns = 0;
+                document.querySelector('.restart').classList.remove('hidden');
+                //opposite winner of turn since they won last turn
+                if (controller.getTurnPlayerName() === 'Player One') {
+                    document.querySelector('.turn').textContent = 'Player Two Wins!';
+                } else {document.querySelector('.turn').textContent = 'Player One Wins!';};
+                document.querySelector('.cover').classList.toggle('hidden');
+                break;
+              // use % of 9 instead of turns === 9 in case of choosing to play again needs to remain constaint case  
+            } else if ( turns % 9 === 0 && winner !== true) {
+                console.log('tie game')
+                document.querySelector('.turn').textContent = 'Tie Game!'
+                document.querySelector('.restart').classList.remove('hidden');
+                document.querySelector('.cover').classList.toggle('hidden');
+                break;
+            }
+        }    
+    }
+
     return {
         //playerFactory,
         getPlayers,
@@ -359,6 +414,7 @@ const controller = (() => {
         getTurnPlayerName,
         getTurnPlayerMark,
 
+        checkWinner,
     }
 })();
 
