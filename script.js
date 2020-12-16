@@ -107,7 +107,6 @@ const gameBoard = (function() {
 const cpuAi = (function() {
     const aiNumber = () => {
         let filter = [];
-
         let b = gameBoard.getBoard()
 
         for (let i = 0; i < b.length; i++) {
@@ -148,7 +147,6 @@ const controller = (() => {
             playerTwo = playerFactory('p2', 'Player Two', 'o')
             e.target.classList.toggle('active')
             pTwoCpu.classList.remove('active')
-            //startButton.setAttribute('class', .start')
 
             //Create start button so it can't be accessed w/o selecting players. Also prevents starting game prematurely by toggling display in DOM manipulation
             if (setUp.contains(document.querySelector('.start'))) {
@@ -160,7 +158,6 @@ const controller = (() => {
             playerTwo = playerFactory('p2', 'CPU', 'o')
             e.target.classList.toggle('active')
             pTwoHuman.classList.remove('active')
-            //startButton.setAttribute('class', .start')
             if (setUp.contains(document.querySelector('.start'))) { return; } 
                 else { createStart(); };
         } else if (e.target.matches('.start')) {
@@ -169,7 +166,6 @@ const controller = (() => {
         }
     });
 
-    
     const createStart = () => {
         const setupDiv = document.querySelector('.setup');
         const newStartButton = document.createElement('button');
@@ -184,18 +180,17 @@ const controller = (() => {
         document.querySelector('.cover').classList.toggle('hidden');
         e.target.classList.add('hidden');
         winner = false;
+        if(playerTwo.name === 'CPU') {turn = playerOne};
         turns = 0;
         gameBoard.resetBoard();
     });
     //----------END GAME SETUP SECTION ----------
 
     const playerFactory = (player, name, mark) => {
-        //const sayHello = () => console.log('hello!');
         return { 
             player,
             name, 
             mark, 
-            //sayHello 
         };
     };
       
@@ -215,21 +210,16 @@ const controller = (() => {
     const getTurn = () => {
         return turn.player;
     }
-
     const getTurnPlayerName = () => {
         return turn.name;
     }
-
     const getTurnPlayerMark = () => {
         return turn.mark;
     }
-
     const turnNumber = () => {
         return turns;
     }
-
     const toggleTurn = () => {
-        //console.log(turn);
         turn !== playerTwo ? turn = playerTwo : turn = playerOne;
         turns++;
         return turn.mark;
@@ -245,9 +235,8 @@ const controller = (() => {
             document.querySelector('.turn').textContent = 'You beat the CPU!';
             return;
         };
-
-        // I had a cool short loop that worked well, it only had a problem identifying winning 2 different ways at once. 
-        // I commented it out if you want to look and give feedback :)
+        // Had a cool short loop that worked well, it only had a problem identifying winning 2 different ways at once. 
+        // Commented out if you want to look and give feedback :)
         if (board[0].mark !== '' && board[0].mark == board[3].mark && board[3].mark == board[6].mark ||
             board[0].mark !== '' && board[0].mark == board[1].mark && board[1].mark == board[2].mark ||
             board[6].mark !== '' && board[6].mark == board[7].mark && board[7].mark == board[8].mark ||
@@ -300,7 +289,6 @@ const controller = (() => {
         [0, 4, 8],
         [2, 4, 6]
     ]
- 
  //find a winner. Loops thru wincons and applys them, checking if marks match
     const checkWinner = () => {
         
