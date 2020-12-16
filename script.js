@@ -1,101 +1,32 @@
-//MODULE EXAMPLE
-var myModule = (function() {
-    'use strict';
-
-  var _privateProperty = 'Hello World';
-  var publicProperty = 'I am a public property';
-
-  function _privateMethod() {
-    console.log(_privateProperty);
-  }
-
-  function publicMethod() {
-    _privateMethod();
-  }
-
-// whatever is available publically goes here
-  return {
-    publicMethod: publicMethod,
-    publicProperty: publicProperty
-  };
-  })();//immmediatly called on, can pass variables thru as well
-/*
-myModule.publicMethod(); // outputs 'Hello World'
-console.log(myModule.publicProperty); // outputs 'I am a public property'
-console.log(myModule._privateProperty); // is undefined protected by the module closure
-myModule._privateMethod(); // is TypeError protected by the module closure
-*/
-
-//--DYNAMICALLY SELECT BUTTONS INCLUDING ONES THAT ARE NOT CREATED--
-document.querySelector('.gameboard').addEventListener('click', (e) => {
+const DOM = (function() {
+    const click = document.querySelector('.gameboard').addEventListener('click', (e) => {
     //e.preventDefault();
     if (!e.target) { return; }
     if (e.target.matches('.tile')) {
-        //this.textContent = 'x'
-        //console.log('tile')
-
-
-        //console.log(e.target.getAttribute('data-value'))
+        
         let v = e.target.getAttribute('data-value');
-
-
-        //let player = 'playerOne';
-
         let player = controller.getTurn();
 
-        // changes the div to have text/mark 
-        //e.target.innerText = 'x'
-
-        //gameBoard.mark(v) //before adding player
         gameBoard.mark(player, v)
-        controller.toggleTurn();
+        //controller.toggleTurn();
         gameBoard.renderBoard()
-        //gameBoard.checkWinner()
         controller.checkWinner();
+        cpuAi.checkAi();
     }
-});
-
-/*
-// --for mark function reference --
-    const mark = (player, value) => {
-        const boardObj = board[value].mark
-        if (!boardObj === ''){return};
-        if (boardObj === '' && player === 'p1') {
-            return board[value].mark = 'x';  
-        } else {
-            return board[value].mark = 'o'; 
-        }
+    });
+    return {
+        click
     }
-*/
+})();
 
 const gameBoard = (function() {
     'use strict';
     
-    //const tile = {
-    //    mark: ''
-    //}
     const board = [];
 
     const getBoard = () => {
         return board;
     }
-
-    /*
-    //works, but doesnt pull from board array
-    function createTiles2() {
-        const boardContainer= document.querySelector('.gameboard')
-        
-        for (let i = 1; i <= 9; i++) {
-            //create dom element
-            const newTile = document.createElement('div');
-            newTile.setAttribute('class', 'tile');
-            newTile.setAttribute('value', i);
-            boardContainer.appendChild(newTile);
-            //push to board array
-            board.push(tile);
-        }
-    }
-    */
 
     // create board from board array
     function tileTemplate(obj, num) {
@@ -116,11 +47,8 @@ const gameBoard = (function() {
         //console.log(obj.mark); //works
     }
 
-
-
     const createTiles = () => {
         if (board.length === 0) {
-            
             for (let i = 0; i < 9; i++) {
                 board.push(
                     {id: i,
@@ -128,11 +56,8 @@ const gameBoard = (function() {
                 );
                 tileTemplate(board[i]);
             }
-
         } else {return}
-        console.log(board);
     }
-
 
     const renderBoard = () => {
         createTiles();
@@ -146,7 +71,9 @@ const gameBoard = (function() {
         }
         //Display turn and mark for clarity
         document.querySelector('.turn').textContent = (controller.getTurnPlayerName()+`'s turn! Place your "${(controller.getTurnPlayerMark().toUpperCase())}"`)
-
+        if (controller.getPlayers()["playerTwo"].name === 'CPU' && controller.turnNumber() > 1) {
+            document.querySelector('.turn').textContent = 'Still your turn, bud';
+        }
     }
 
     const resetBoard = () => {
@@ -154,89 +81,57 @@ const gameBoard = (function() {
         renderBoard();
     }
 
-    //when adding players, might have to pass mark(player, mark)
-    /*function mark(v) {
-        let boardObj = board[v].mark
-
-        if (boardObj === '') {
-            return board[v].mark = 'x';  
-        } 
-        console.log('access');
-    }
-    */
-    const mark = (player, value) => {
+   const mark = (player, value) => {
         const boardObj = board[value].mark
-        // !boardobj doesnt stop o from overwriting x for some reason
-        if (!boardObj === ''){return};
-        if (boardObj === '' && player === 'p1') {
+        // toggle turn moved here from click action to only change turn on valid mark
+        if (boardObj !== ''){return}
+        else if (boardObj === '' && player === 'p1') {
+            controller.toggleTurn();
             return board[value].mark = 'x';  
-        } else if (boardObj === '' && player === 'p2') {
+        } else if (player === 'CPU') {
+            return board[value].mark = 'o';
+        } else {
+            controller.toggleTurn();
             return board[value].mark = 'o'; 
         }
     }
-
-    /* adding to controller
-    const winCon = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ]
-    
-    //find a winner. Loops thru wincons and applys them, checking if marks match
-    const checkWinner = () => {
-
-        let xx = 0;
-        let yy = 0;
-        let zz = 0;
-        
-        let winner = false;
-
-        for(let i = 0; i < winCon.length; i++) {
-            //const board = gameBoard.getBoard(); //to work outside gameboard method
-            const turns = controller.turnNumber();
-            xx = winCon[i][0]
-            yy = winCon[i][1]
-            zz = winCon[i][2]
-    
-            //console.log( xx , yy , zz)
-        
-            if ( board[xx].mark !== '' && board[xx].mark == board[yy].mark && board[yy].mark == board[zz].mark) {
-                console.log('winner = ', board[xx].mark )
-                winner = true;
-                document.querySelector('.restart').classList.remove('hidden');
-                //opposite winner of turn since they won last turn
-                if (controller.getTurnPlayerName() === 'Player One') {
-                    document.querySelector('.turn').textContent = 'Player Two Wins!';
-                } else {document.querySelector('.turn').textContent = 'Player One Wins!';};
-                document.querySelector('.cover').classList.toggle('hidden');
-                break;
-              // use % of 9 instead of turns === 9 in case of choosing to play again needs to remain constaint case  
-            } else if ( turns % 9 === 0 && winner !== true) {
-                console.log('tie game')
-                document.querySelector('.turn').textContent = 'Tie Game!'
-                document.querySelector('.restart').classList.remove('hidden');
-                document.querySelector('.cover').classList.toggle('hidden');
-                break;
-            }
-        }    
-    }
-    */
 
     return {
         getBoard,
         renderBoard,
         mark,
-        //checkWinner,
         resetBoard,
     }
 })();
-//gameBoard.renderBoard()
 
+const cpuAi = (function() {
+    const aiNumber = () => {
+        let filter = [];
+
+        let b = gameBoard.getBoard()
+
+        for (let i = 0; i < b.length; i++) {
+            if (b[i].mark === '') { filter.push(b[i].id)}
+        }
+        return filter[Math.floor(Math.random() * filter.length)];
+    }
+
+    const checkAi = () => {
+        if (controller.getTurnPlayerName() !== 'CPU') {
+            return;
+        } else {
+            let v = aiNumber();
+            let player = 'CPU';
+            gameBoard.mark(player, v)
+            controller.toggleTurn();
+            gameBoard.renderBoard()
+            controller.checkWinner();
+        }
+    }
+    return {
+        checkAi,
+    }
+})();
 
 const controller = (() => {
     'use strict'
@@ -244,9 +139,8 @@ const controller = (() => {
     const pTwoHuman = document.getElementById('p2-human');
     const pTwoCpu = document.getElementById('p2-cpu');
     const restartButton = document.querySelector('.restart');
-    //const startButton = document.querySelector('.start');
 
-    //-- HANDLES GAME SETUP SECTION --
+    //----------HANDLES GAME SETUP SECTION ----------
     document.querySelector('.setup').addEventListener('click', (e) => {
         //e.preventDefault();
         if (!e.target) { return; }
@@ -287,24 +181,14 @@ const controller = (() => {
     
     restartButton.addEventListener('click', (e) => {
         e.preventDefault();
-        gameBoard.resetBoard();
         document.querySelector('.cover').classList.toggle('hidden');
         e.target.classList.add('hidden');
+        winner = false;
+        turns = 0;
+        gameBoard.resetBoard();
     });
-    /*
-    startButton.addEventListener('click', (e) => {
-        //e.preventDefault();
-        if (!e.target) { return; }
+    //----------END GAME SETUP SECTION ----------
 
-        //playerOne = playerFactory('p1', 'Human', 'x')
-        //playerTwo = playerFactory('p2', 'CPU', 'o')
-        //console.log(.start')
-        gameBoard.renderBoard() 
-        startButton.parentElement.classList.toggle('hidden')
-        
-        
-    });
-    */
     const playerFactory = (player, name, mark) => {
         //const sayHello = () => console.log('hello!');
         return { 
@@ -348,13 +232,65 @@ const controller = (() => {
         //console.log(turn);
         turn !== playerTwo ? turn = playerTwo : turn = playerOne;
         turns++;
-        //console.log(turn.name);
-       // document.querySelector('.turn').textContent = (controller.getTurnPlayerName()+`'s turn! Place your "${(turn.mark.toUpperCase())}"`)
-
         return turn.mark;
     }
 
-    const winCon = [
+    let winner = false;
+
+    const checkWinner = () => {
+        const board = gameBoard.getBoard();
+        
+        //win case when playing vs AI bc auto checks
+        if (winner === true) {
+            document.querySelector('.turn').textContent = 'You beat the CPU!';
+            return;
+        };
+
+        // I had a cool short loop that worked well, it only had a problem identifying winning 2 different ways at once. 
+        // I commented it out if you want to look and give feedback :)
+        if (board[0].mark !== '' && board[0].mark == board[3].mark && board[3].mark == board[6].mark ||
+            board[0].mark !== '' && board[0].mark == board[1].mark && board[1].mark == board[2].mark ||
+            board[6].mark !== '' && board[6].mark == board[7].mark && board[7].mark == board[8].mark ||
+            board[2].mark !== '' && board[2].mark == board[5].mark && board[5].mark == board[8].mark ||
+            board[3].mark !== '' && board[3].mark == board[4].mark && board[4].mark == board[5].mark ||
+            board[1].mark !== '' && board[1].mark == board[4].mark && board[4].mark == board[7].mark ||
+            board[2].mark !== '' && board[2].mark == board[4].mark && board[4].mark == board[6].mark ||
+            board[0].mark !== '' && board[0].mark == board[4].mark && board[4].mark == board[8].mark) {
+
+            winner = true;
+            
+            //opposite winner of turn since they won before toggle turn
+            if (controller.getTurnPlayerName() === 'Player One') {
+                document.querySelector('.turn').textContent = 'Player Two Wins!';
+            } else {
+                document.querySelector('.turn').textContent = 'Player One Wins!';
+            };
+            document.querySelector('.restart').classList.remove('hidden');
+            document.querySelector('.cover').classList.toggle('hidden');
+            return;
+
+        } else if (winner === false && turns === 9) {
+            document.querySelector('.turn').textContent = 'Tie Game!'
+            document.querySelector('.restart').classList.remove('hidden');
+            document.querySelector('.cover').classList.toggle('hidden');
+            return;
+        }
+            
+    }
+
+    return {
+        getPlayers,
+        toggleTurn,
+        getTurn,
+        turnNumber,
+        getTurnPlayerName,
+        getTurnPlayerMark,
+        checkWinner,
+    }
+})();
+
+ /* 
+     const winCon = [
         [0, 1, 2],
         [3, 4, 5],
         [6, 7, 8],
@@ -364,29 +300,30 @@ const controller = (() => {
         [0, 4, 8],
         [2, 4, 6]
     ]
-    
-    //find a winner. Loops thru wincons and applys them, checking if marks match
+ 
+ //find a winner. Loops thru wincons and applys them, checking if marks match
     const checkWinner = () => {
-
+        
         let xx = 0;
         let yy = 0;
         let zz = 0;
         
-        let winner = false;
-
         for(let i = 0; i < winCon.length; i++) {
             const board = gameBoard.getBoard(); //to work outside gameboard method
-            //const turns = controller.turnNumber();
+            
             xx = winCon[i][0]
             yy = winCon[i][1]
             zz = winCon[i][2]
-    
-            //console.log( xx , yy , zz)
+
+            //win case when playing vs AI
+            if (winner === true) {
+                document.querySelector('.turn').textContent = 'WIN against CPU!';
+                return;
+            };
         
-            if ( board[xx].mark !== '' && board[xx].mark == board[yy].mark && board[yy].mark == board[zz].mark) {
+            if ((board[xx].mark !== '' && board[xx].mark === board[yy].mark && board[yy].mark === board[zz].mark)) {
                 console.log('winner = ', board[xx].mark )
                 winner = true;
-                turns = 0;
                 document.querySelector('.restart').classList.remove('hidden');
                 //opposite winner of turn since they won last turn
                 if (controller.getTurnPlayerName() === 'Player One') {
@@ -394,38 +331,11 @@ const controller = (() => {
                 } else {document.querySelector('.turn').textContent = 'Player One Wins!';};
                 document.querySelector('.cover').classList.toggle('hidden');
                 break;
-              // use % of 9 instead of turns === 9 in case of choosing to play again needs to remain constaint case  
-            } else if ( turns % 9 === 0 && winner !== true) {
-                console.log('tie game')
+            } else if (winner === false && turns === 9) {
                 document.querySelector('.turn').textContent = 'Tie Game!'
                 document.querySelector('.restart').classList.remove('hidden');
                 document.querySelector('.cover').classList.toggle('hidden');
                 break;
             }
         }    
-    }
-
-    return {
-        //playerFactory,
-        getPlayers,
-        toggleTurn,
-        getTurn,
-        turnNumber,
-        getTurnPlayerName,
-        getTurnPlayerMark,
-
-        checkWinner,
-    }
-})();
-
-
-
-
-
-
-/*
-//trying to find the mark value pulling from gameboard
-gameBoard.getBoard().forEach(function(item, index, array) {
-    console.log(index, item.mark)
-})
-*/
+    } */
