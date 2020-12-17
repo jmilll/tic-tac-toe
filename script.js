@@ -1,23 +1,20 @@
-const DOM = (function() {
-    const click = document.querySelector('.gameboard').addEventListener('click', (e) => {
-    //e.preventDefault();
-    if (!e.target) { return; }
-    if (e.target.matches('.tile')) {
-        
-        let v = e.target.getAttribute('data-value');
-        let player = controller.getTurn();
+const DOM = (() => {
+    return document.querySelector('.gameboard').addEventListener('click', (e) => {
+        //e.preventDefault();
+        if (!e.target) { return; }
+        if (e.target.matches('.tile')) {
+            
+            let v = e.target.getAttribute('data-value');
+            let player = controller.getTurn();
 
-        gameBoard.mark(player, v)
-        //controller.toggleTurn();
-        gameBoard.renderBoard()
-        controller.checkWinner();
-        if (controller.getGameOver() === true){return};
-        cpuAi.checkAi();
-    }
+            gameBoard.mark(player, v)
+            //controller.toggleTurn();
+            gameBoard.renderBoard()
+            controller.checkWinner();
+            if (controller.getGameOver() === true){return};
+            cpuAi.checkAi();
+        }
     });
-    return {
-        click
-    }
 })();
 
 const gameBoard = (function() {
@@ -105,7 +102,7 @@ const gameBoard = (function() {
     }
 })();
 
-const cpuAi = (function() {
+const cpuAi = (() => {
     const aiNumber = () => {
         let filter = [];
         let b = gameBoard.getBoard()
@@ -243,7 +240,6 @@ const controller = (() => {
         [2, 4, 6]
     ]
 
-
     const checkWinner = () => {
         const board = gameBoard.getBoard();
         const tiles = document.querySelectorAll('.tile');
@@ -251,13 +247,6 @@ const controller = (() => {
         let xx = 0;
         let yy = 0;
         let zz = 0;
-
-        /*
-        //win case when playing vs AI bc auto checks
-        if (winner === true) {
-            document.querySelector('.turn').textContent = 'You beat the CPU!';
-            return;
-        }; */
 
         for(let i = 0; i < winCon.length; i++) {
             
@@ -291,16 +280,6 @@ const controller = (() => {
             document.querySelector('.cover').classList.toggle('hidden');
             return;
         } 
-        /*
-        if (board[0].mark !== '' && board[0].mark == board[3].mark && board[3].mark == board[6].mark ||
-            board[0].mark !== '' && board[0].mark == board[1].mark && board[1].mark == board[2].mark ||
-            board[6].mark !== '' && board[6].mark == board[7].mark && board[7].mark == board[8].mark ||
-            board[2].mark !== '' && board[2].mark == board[5].mark && board[5].mark == board[8].mark ||
-            board[3].mark !== '' && board[3].mark == board[4].mark && board[4].mark == board[5].mark ||
-            board[1].mark !== '' && board[1].mark == board[4].mark && board[4].mark == board[7].mark ||
-            board[2].mark !== '' && board[2].mark == board[4].mark && board[4].mark == board[6].mark ||
-            board[0].mark !== '' && board[0].mark == board[4].mark && board[4].mark == board[8].mark) {
-         */   
     }
 
     return {
@@ -315,52 +294,13 @@ const controller = (() => {
     }
 })();
 
- /* 
-     const winCon = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ]
- //find a winner. Loops thru wincons and applys them, checking if marks match
-    const checkWinner = () => {
-        
-        let xx = 0;
-        let yy = 0;
-        let zz = 0;
-        
-        for(let i = 0; i < winCon.length; i++) {
-            const board = gameBoard.getBoard(); //to work outside gameboard method
-            
-            xx = winCon[i][0]
-            yy = winCon[i][1]
-            zz = winCon[i][2]
-
-            //win case when playing vs AI
-            if (winner === true) {
-                document.querySelector('.turn').textContent = 'WIN against CPU!';
-                return;
-            };
-        
-            if ((board[xx].mark !== '' && board[xx].mark === board[yy].mark && board[yy].mark === board[zz].mark)) {
-                console.log('winner = ', board[xx].mark )
-                winner = true;
-                document.querySelector('.restart').classList.remove('hidden');
-                //opposite winner of turn since they won last turn
-                if (controller.getTurnPlayerName() === 'Player One') {
-                    document.querySelector('.turn').textContent = 'Player Two Wins!';
-                } else {document.querySelector('.turn').textContent = 'Player One Wins!';};
-                document.querySelector('.cover').classList.toggle('hidden');
-                break;
-            } else if (winner === false && turns === 9) {
-                document.querySelector('.turn').textContent = 'Tie Game!'
-                document.querySelector('.restart').classList.remove('hidden');
-                document.querySelector('.cover').classList.toggle('hidden');
-                break;
-            }
-        }    
-    } */
+/*
+if (board[0].mark !== '' && board[0].mark == board[3].mark && board[3].mark == board[6].mark ||
+    board[0].mark !== '' && board[0].mark == board[1].mark && board[1].mark == board[2].mark ||
+    board[6].mark !== '' && board[6].mark == board[7].mark && board[7].mark == board[8].mark ||
+    board[2].mark !== '' && board[2].mark == board[5].mark && board[5].mark == board[8].mark ||
+    board[3].mark !== '' && board[3].mark == board[4].mark && board[4].mark == board[5].mark ||
+    board[1].mark !== '' && board[1].mark == board[4].mark && board[4].mark == board[7].mark ||
+    board[2].mark !== '' && board[2].mark == board[4].mark && board[4].mark == board[6].mark ||
+    board[0].mark !== '' && board[0].mark == board[4].mark && board[4].mark == board[8].mark) {
+*/   
