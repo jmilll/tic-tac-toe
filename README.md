@@ -1,7 +1,7 @@
 
 # Tic Tac Toe
 
-Classic game of Tic Tac Toe coded up for a quick game for fun, or to settle a dispute.
+Classic game of Tic Tac Toe coded up to enjoy a quick game for fun, or to settle a dispute.
 
 [Play](https://jmilll.github.io/tic-tac-toe/)
 
