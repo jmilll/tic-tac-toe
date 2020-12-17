@@ -1,31 +1,36 @@
 
 # Tic Tac Toe
 
-A
+Classic game of Tic Tac Toe coded up for a quick game for fun, or to settle a dispute.
 
 [Play](https://jmilll.github.io/tic-tac-toe/)
 
 ## Example
 
-![Default Page](assets/demo1.png)
+![Home Page](assets/demo1.png)
 
-![Add Book](assets/demo2.png)
+![Winning](assets/demo2.png)
 
 [Play Here](https://jmilll.github.io/tic-tac-toe/)
 
 ## Features
 
-* P
+* Play against another human.
+* Play agains AI bot.
+* Play again button
+* Private functions to prevent cheating.
+
 
 ## Motivation
 
-The purpose of this project was to learn and understand object oriented programming using function factories and modules.
+The purpose of this project was to learn and understand object oriented programming using function factories and modules using public/private functions through closure.
 
 ## Technologies Used
 
 * JavaScript
 * Function Factories
 * Modules
+* Closure
 * HTML / CSS
 
 ## Acknowledgements
