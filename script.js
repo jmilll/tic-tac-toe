@@ -11,6 +11,7 @@ const DOM = (function() {
         //controller.toggleTurn();
         gameBoard.renderBoard()
         controller.checkWinner();
+        if (controller.getGameOver() === true){return};
         cpuAi.checkAi();
     }
     });
@@ -227,16 +228,70 @@ const controller = (() => {
 
     let winner = false;
 
+    const getGameOver = () => {
+        return winner;
+    }
+
+    const winCon = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+    ]
+
+
     const checkWinner = () => {
         const board = gameBoard.getBoard();
+        const tiles = document.querySelectorAll('.tile');
         
+        let xx = 0;
+        let yy = 0;
+        let zz = 0;
+
+        /*
         //win case when playing vs AI bc auto checks
         if (winner === true) {
             document.querySelector('.turn').textContent = 'You beat the CPU!';
             return;
-        };
-        // Had a cool short loop that worked well, it only had a problem identifying winning 2 different ways at once. 
-        // Commented out if you want to look and give feedback :)
+        }; */
+
+        for(let i = 0; i < winCon.length; i++) {
+            
+            xx = winCon[i][0];
+            yy = winCon[i][1];
+            zz = winCon[i][2];
+        
+            if ((board[xx].mark !== '') && (board[xx].mark === board[yy].mark) && (board[yy].mark === board[zz].mark)) {
+                
+                winner = true;
+
+                //Highlight the winning 3
+                tiles[xx].classList.add('win')
+                tiles[yy].classList.add('win')
+                tiles[zz].classList.add('win')
+
+                //opposite winner of turn since they won before toggle turn
+                if (controller.getTurnPlayerName() === 'Player One') {
+                    document.querySelector('.turn').textContent = 'Player Two Wins!';
+                } else {
+                    document.querySelector('.turn').textContent = 'Player One Wins!';
+                };
+                document.querySelector('.restart').classList.remove('hidden');
+                document.querySelector('.cover').classList.toggle('hidden');
+                return;
+            } 
+        } 
+        if (winner === false && turns === 9) {
+            document.querySelector('.turn').textContent = 'Tie Game!'
+            document.querySelector('.restart').classList.remove('hidden');
+            document.querySelector('.cover').classList.toggle('hidden');
+            return;
+        } 
+        /*
         if (board[0].mark !== '' && board[0].mark == board[3].mark && board[3].mark == board[6].mark ||
             board[0].mark !== '' && board[0].mark == board[1].mark && board[1].mark == board[2].mark ||
             board[6].mark !== '' && board[6].mark == board[7].mark && board[7].mark == board[8].mark ||
@@ -245,26 +300,7 @@ const controller = (() => {
             board[1].mark !== '' && board[1].mark == board[4].mark && board[4].mark == board[7].mark ||
             board[2].mark !== '' && board[2].mark == board[4].mark && board[4].mark == board[6].mark ||
             board[0].mark !== '' && board[0].mark == board[4].mark && board[4].mark == board[8].mark) {
-
-            winner = true;
-            
-            //opposite winner of turn since they won before toggle turn
-            if (controller.getTurnPlayerName() === 'Player One') {
-                document.querySelector('.turn').textContent = 'Player Two Wins!';
-            } else {
-                document.querySelector('.turn').textContent = 'Player One Wins!';
-            };
-            document.querySelector('.restart').classList.remove('hidden');
-            document.querySelector('.cover').classList.toggle('hidden');
-            return;
-
-        } else if (winner === false && turns === 9) {
-            document.querySelector('.turn').textContent = 'Tie Game!'
-            document.querySelector('.restart').classList.remove('hidden');
-            document.querySelector('.cover').classList.toggle('hidden');
-            return;
-        }
-            
+         */   
     }
 
     return {
@@ -275,6 +311,7 @@ const controller = (() => {
         getTurnPlayerName,
         getTurnPlayerMark,
         checkWinner,
+        getGameOver,
     }
 })();
 
