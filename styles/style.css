@@ -1,6 +1,39 @@
 /**/
 :root {
     --background-color: rgb(245, 245, 245); /*whitesmoke*/
+    --black: #1D3557; /*rgb(30, 30, 30)*/
+    --medium: #457B9D;
+    --active-highlight: #e85280; /*#dd5d84*/
+    --winrow: #e85280;
+    --start: #4f5d75; /*#24909d*/
+    --tile-hover: #dee2e8;
+}
+
+#colors {
+    color: #EF8354
+    #BFC0C0
+    #4F5D75 *
+    #2D3142
+
+    #fc5185
+
+    #E63946
+    #F1FAEE
+    #A8DADC
+    #457B9D
+    #1D3557
+
+    #555B6E
+    #89B0AE
+    #BEE3DB
+    #FAF9F9
+    #FFD6BA
+
+    #645d5a
+    #e6e4d5
+    #c89e9e
+    #423e3c
+    #b3bbb4
 }
 
 html {
@@ -14,13 +47,79 @@ body {
     margin: 0;
     background-color: var(--background-color);
     font-family: 'Inconsolata', monospace, sans-serif;
-    color: rgb(30 30 30);
+    color: var(--black);
     font-size: 1.4em;
+    letter-spacing: 1px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+h1 {
+    font-size: 3em;
+    font-weight: 900;
+    margin: 20px 0px 0px 0px;
+    text-shadow: 3px 3px #457b9d, 4px 4px #dd5d84;
+}
+
+h3 {
+    margin: 15px 0px;
+}
+
+h4 {
+    margin: 0;
+}
+
+.header {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footer {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    height: 1.7em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 35%;
+    padding-bottom: 35%;
+    position: relative;
+    background-color: #2980b9;
+    margin-top: 1.5em;
+}
+
+.gameboard {
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    place-items: center center;
+    background-color: var(--background-color);
+    outline: 4px solid var(--background-color);
+    outline-offset: -2px;
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+
+    min-width: 200px;
+    min-height: 200px;
+    max-width: 550px;
+    max-height: 550px;
+}
+
+/* normal w/o scaling
 .board-container {
     position: relative;
     width: 100%;
@@ -38,8 +137,8 @@ body {
     outline-offset: -2px;
     width: 200px;
     height: 200px;
-    margin-top: 20%
-}
+    margin: 7% auto;
+} */
 
 .tile {
     display: flex;
@@ -48,26 +147,93 @@ body {
     height: 100%;
     width: 100%;
     background-color: var(--background-color);
-    border: 2px solid rgb(31, 31, 31);
+    border: 2px solid var(--black);
     font-size: 2em;
+    font-weight: 600;
 }
 
 .tile:hover {
-    background-color: rgb(212, 212, 212);
+    background-color: var(--tile-hover);
 }
 
-
+.win {
+    background-color: var(--winrow);
+    color: var(--background-color);
+}
 .cover {
-    background: rgb(0 134 252 / 80%);
     position: absolute;
     height: 100%;
     width: 100%;
+    min-width: 200px;
+    min-height: 200px;
+    z-index: 1;
+    padding: 5px;
 }
 .hidden {
     display: none;
 }
 
 .active {
-    background-color: blueviolet;
+    background-color: var(--active-highlight);
+    color: var(--background-color);
 }
 
+.choose-player {
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-info {
+    font-size: 1.35em;
+    font-weight: 600;
+}
+/*
+button {
+    width: 100px;
+    height: 40px;
+    cursor: pointer;
+    background: var(--medium);
+    color: var(--background-color);
+    border: none;
+    border-radius: 5px;
+    padding: .2em .5em;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}*/
+
+button {
+    width: 100px;
+    height: 40px;
+    cursor: pointer;
+    background: transparent;
+    border: 2px solid var(--black);
+    color: var(--black);
+    border-radius: 5px;
+    padding: .2em .5em;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+} 
+
+button:hover {
+    background-color: var(--black);
+    color: var(--background-color);
+    transition: .2s;
+    transform: translateY(-2px);
+}
+
+.start {
+    width: 100%;
+    margin-top: 70px;
+    background-color: var(--start);
+    color: var(--background-color);
+    border: none;
+}
+
+.restart {
+    width: auto;
+    background-color: var(--start);
+    color: var(--background-color);
+    border: none;
+}
