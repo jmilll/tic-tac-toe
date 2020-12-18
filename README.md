@@ -17,6 +17,7 @@ Classic game of Tic Tac Toe coded up to enjoy a quick game for fun, or to settle
 
 * Play against another human.
 * Play agains AI bot.
+* Highlights winning row/column
 * Play again button
 * Private functions to prevent cheating.
 
