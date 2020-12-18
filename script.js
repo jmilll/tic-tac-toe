@@ -8,7 +8,6 @@ const DOM = (() => {
             let player = controller.getTurn();
 
             gameBoard.mark(player, v)
-            //controller.toggleTurn();
             gameBoard.renderBoard()
             controller.checkWinner();
             if (controller.getGameOver() === true){return};
@@ -17,17 +16,17 @@ const DOM = (() => {
     });
 })();
 
-const gameBoard = (function() {
+const gameBoard = (() => {
     'use strict';
     
-    const board = [];
+    const _board = [];
 
     const getBoard = () => {
-        return board;
+        return _board;
     }
 
     // create board from board array
-    function tileTemplate(obj, num) {
+    const tileTemplate = (obj, num) => {
         const boardContainer = document.querySelector('.gameboard')
         const newTile = document.createElement('div');
         newTile.setAttribute('class', 'tile');
@@ -42,55 +41,53 @@ const gameBoard = (function() {
             }
         newTile.setAttribute('data-value', num);
         boardContainer.appendChild(newTile);
-        //console.log(obj.mark); //works
     }
 
-    const createTiles = () => {
-        if (board.length === 0) {
+    const _createTiles = () => {
+        if (_board.length === 0) {
             for (let i = 0; i < 9; i++) {
-                board.push(
+                _board.push(
                     {id: i,
                     mark: ''}
                 );
-                tileTemplate(board[i]);
+                tileTemplate(_board[i]);
             }
-        } else {return}
+        } else {return};
     }
 
     const renderBoard = () => {
-        createTiles();
-        //takes all tiles renders from board array
+        _createTiles();
         const tiles = document.querySelectorAll('.tile');
         //erase current board to populate from board
         tiles.forEach(tile => document.querySelector('.gameboard').removeChild(tile));
-        for (let j = 0; j < board.length; j++) {
+        for (let j = 0; j < _board.length; j++) {
             //create dom element for each object in array
-            tileTemplate((board[j]), j);
+            tileTemplate((_board[j]), j);
         }
         //Display turn and mark for clarity
         document.querySelector('.turn').textContent = (controller.getTurnPlayerName()+`'s turn! Place your "${(controller.getTurnPlayerMark().toUpperCase())}"`)
-        if (controller.getPlayers()["playerTwo"].name === 'CPU' && controller.turnNumber() > 1) {
+        if (controller.getPlayers()["_playerTwo"].name === 'CPU' && controller.turnNumber() > 1) {
             document.querySelector('.turn').textContent = 'Still your turn, bud';
         }
     }
 
     const resetBoard = () => {
-        board.length = 0;
+        _board.length = 0;
         renderBoard();
     }
 
    const mark = (player, value) => {
-        const boardObj = board[value].mark
+        const boardObj = _board[value].mark
         // toggle turn moved here from click action to only change turn on valid mark
         if (boardObj !== ''){return}
         else if (boardObj === '' && player === 'p1') {
             controller.toggleTurn();
-            return board[value].mark = 'x';  
+            return _board[value].mark = 'x';  
         } else if (player === 'CPU') {
-            return board[value].mark = 'o';
+            return _board[value].mark = 'o';
         } else {
             controller.toggleTurn();
-            return board[value].mark = 'o'; 
+            return _board[value].mark = 'o'; 
         }
     }
 
@@ -103,12 +100,12 @@ const gameBoard = (function() {
 })();
 
 const cpuAi = (() => {
-    const aiNumber = () => {
+    const _aiNumber = () => {
         let filter = [];
-        let b = gameBoard.getBoard()
+        let b = gameBoard.getBoard();
 
         for (let i = 0; i < b.length; i++) {
-            if (b[i].mark === '') { filter.push(b[i].id)}
+            if (b[i].mark === '') { filter.push(b[i].id)};
         }
         return filter[Math.floor(Math.random() * filter.length)];
     }
@@ -117,11 +114,11 @@ const cpuAi = (() => {
         if (controller.getTurnPlayerName() !== 'CPU') {
             return;
         } else {
-            let v = aiNumber();
+            let v = _aiNumber();
             let player = 'CPU';
             gameBoard.mark(player, v)
             controller.toggleTurn();
-            gameBoard.renderBoard()
+            gameBoard.renderBoard();
             controller.checkWinner();
         }
     }
@@ -132,31 +129,31 @@ const cpuAi = (() => {
 
 const controller = (() => {
     'use strict'
-    const setUp = document.querySelector('.setup');
-    const pTwoHuman = document.getElementById('p2-human');
-    const pTwoCpu = document.getElementById('p2-cpu');
-    const restartButton = document.querySelector('.restart');
+    const _setUp = document.querySelector('.setup');
+    const _pTwoHuman = document.getElementById('p2-human');
+    const _pTwoCpu = document.getElementById('p2-cpu');
+    const _restartButton = document.querySelector('.restart');
 
     //----------HANDLES GAME SETUP SECTION ----------
     document.querySelector('.setup').addEventListener('click', (e) => {
         //e.preventDefault();
         if (!e.target) { return; }
         if (e.target.matches('#p2-human')){
-            playerTwo = playerFactory('p2', 'Player Two', 'o')
-            e.target.classList.toggle('active')
-            pTwoCpu.classList.remove('active')
+            _playerTwo = playerFactory('p2', 'Player Two', 'o');
+            e.target.classList.toggle('active');
+            _pTwoCpu.classList.remove('active');
 
             //Create start button so it can't be accessed w/o selecting players. Also prevents starting game prematurely by toggling display in DOM manipulation
-            if (setUp.contains(document.querySelector('.start'))) {
-                return
+            if (_setUp.contains(document.querySelector('.start'))) {
+                return;
             } else {
                 createStart();
             };
         } else if (e.target.matches('#p2-cpu')){
-            playerTwo = playerFactory('p2', 'CPU', 'o')
+            _playerTwo = playerFactory('p2', 'CPU', 'o')
             e.target.classList.toggle('active')
-            pTwoHuman.classList.remove('active')
-            if (setUp.contains(document.querySelector('.start'))) { return; } 
+            _pTwoHuman.classList.remove('active')
+            if (_setUp.contains(document.querySelector('.start'))) { return; } 
                 else { createStart(); };
         } else if (e.target.matches('.start')) {
             gameBoard.renderBoard() 
@@ -173,13 +170,13 @@ const controller = (() => {
         setupDiv.appendChild(newStartButton);
     }
     
-    restartButton.addEventListener('click', (e) => {
+    _restartButton.addEventListener('click', (e) => {
         e.preventDefault();
         document.querySelector('.cover').classList.toggle('hidden');
         e.target.classList.add('hidden');
-        winner = false;
-        if(playerTwo.name === 'CPU') {turn = playerOne};
-        turns = 0;
+        _winner = false;
+        if(_playerTwo.name === 'CPU') {_turn = _playerOne};
+        _turns = 0;
         gameBoard.resetBoard();
     });
     //----------END GAME SETUP SECTION ----------
@@ -192,44 +189,41 @@ const controller = (() => {
         };
     };
       
-    //const playerOne = playerFactory('p1', 'Human', 'x');
-    //const playerTwo = playerFactory('p2', 'CPU', 'o');
-      
-    let playerOne = playerFactory('p1', 'Player One', 'x');
-    let playerTwo = {};
+    let _playerOne = playerFactory('p1', 'Player One', 'x');
+    let _playerTwo = {};
     
     const getPlayers = () => {
-        return {playerOne, playerTwo}
+        return {_playerOne, _playerTwo}
     }
 
-    let turn = playerOne;
-    let turns = 0;
+    let _turn = _playerOne;
+    let _turns = 0;
 
     const getTurn = () => {
-        return turn.player;
+        return _turn.player;
     }
     const getTurnPlayerName = () => {
-        return turn.name;
+        return _turn.name;
     }
     const getTurnPlayerMark = () => {
-        return turn.mark;
+        return _turn.mark;
     }
     const turnNumber = () => {
-        return turns;
+        return _turns;
     }
     const toggleTurn = () => {
-        turn !== playerTwo ? turn = playerTwo : turn = playerOne;
-        turns++;
-        return turn.mark;
+        _turn !== _playerTwo ? _turn = _playerTwo : _turn = _playerOne;
+        _turns++;
+        return _turn.mark;
     }
 
-    let winner = false;
+    let _winner = false;
 
     const getGameOver = () => {
-        return winner;
+        return _winner;
     }
 
-    const winCon = [
+    const _winCon = [
         [0, 1, 2],
         [3, 4, 5],
         [6, 7, 8],
@@ -248,20 +242,20 @@ const controller = (() => {
         let yy = 0;
         let zz = 0;
 
-        for(let i = 0; i < winCon.length; i++) {
+        for(let i = 0; i < _winCon.length; i++) {
             
-            xx = winCon[i][0];
-            yy = winCon[i][1];
-            zz = winCon[i][2];
+            xx = _winCon[i][0];
+            yy = _winCon[i][1];
+            zz = _winCon[i][2];
         
             if ((board[xx].mark !== '') && (board[xx].mark === board[yy].mark) && (board[yy].mark === board[zz].mark)) {
                 
-                winner = true;
+                _winner = true;
 
                 //Highlight the winning 3
-                tiles[xx].classList.add('win')
-                tiles[yy].classList.add('win')
-                tiles[zz].classList.add('win')
+                tiles[xx].classList.add('win');
+                tiles[yy].classList.add('win');
+                tiles[zz].classList.add('win');
 
                 //opposite winner of turn since they won before toggle turn
                 if (controller.getTurnPlayerName() === 'Player One') {
@@ -274,7 +268,7 @@ const controller = (() => {
                 return;
             } 
         } 
-        if (winner === false && turns === 9) {
+        if (_winner === false && _turns === 9) {
             document.querySelector('.turn').textContent = 'Tie Game!'
             document.querySelector('.restart').classList.remove('hidden');
             document.querySelector('.cover').classList.toggle('hidden');
@@ -293,14 +287,3 @@ const controller = (() => {
         getGameOver,
     }
 })();
-
-/*
-if (board[0].mark !== '' && board[0].mark == board[3].mark && board[3].mark == board[6].mark ||
-    board[0].mark !== '' && board[0].mark == board[1].mark && board[1].mark == board[2].mark ||
-    board[6].mark !== '' && board[6].mark == board[7].mark && board[7].mark == board[8].mark ||
-    board[2].mark !== '' && board[2].mark == board[5].mark && board[5].mark == board[8].mark ||
-    board[3].mark !== '' && board[3].mark == board[4].mark && board[4].mark == board[5].mark ||
-    board[1].mark !== '' && board[1].mark == board[4].mark && board[4].mark == board[7].mark ||
-    board[2].mark !== '' && board[2].mark == board[4].mark && board[4].mark == board[6].mark ||
-    board[0].mark !== '' && board[0].mark == board[4].mark && board[4].mark == board[8].mark) {
-*/   
